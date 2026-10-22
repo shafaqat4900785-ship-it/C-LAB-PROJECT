@@ -66,7 +66,7 @@ int main(){
 
             case 5:
                 printf("Update record selected.\n");
-                Update();
+                update();
                 break;
 
             case 6:
@@ -106,7 +106,7 @@ void Search(void){
 
 }
 //-------------------------------->UPDATE<----------------------------------------
-void Update(void){
+void update(){
 
 }
 //------------------------------>SELL BOOK<---------------------------------------
