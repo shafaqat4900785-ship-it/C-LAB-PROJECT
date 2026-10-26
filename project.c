@@ -6,19 +6,22 @@ struct Book{
     char Author[100];
     char genre[100];
     int Book_id;
-    int Shelf_no;
+    float price;
+    int quantity;
+   // int Shelf_no;
 };
 
 //--------------------------->GLOBAL VARIABLES<---------------------------------
 
-struct Book books[50];
+struct Book books[50]={{"Ned abc","cis",101,20,4},{"abc","bdc",102,45,6},{"anc","abf",103,56,7}};
+int bookid;
 
 
 
 //--------------------------->FUNCTION DECLARATION<-----------------------------
 void Add_book(void);
 void Delete_book(void);
-void Catalog(void);
+void Catalog(struct Book books[]);
 void Search(void);
 void update(void);
 void sell(void);
@@ -33,6 +36,7 @@ int main(){
         printf("|        BOOK SHOP MANAGEMENT SYSTEM        |\n");
         printf("+===========================================+\n");
         printf("| 1.Add new book                            |\n");
+        printf("| 1.Display current records                 |\n");
         printf("| 2.Remove book                             |\n");
         printf("| 3.Catalog                                 |\n");
         printf("| 4.Search book                             |\n");
@@ -56,7 +60,7 @@ int main(){
 
             case 3:
                 printf("Catalog selected.\n");
-                Catalog();
+                Catalog(books);
                 break;
 
             case 4:
@@ -90,7 +94,12 @@ int main(){
 //------------------------------>FUNCTION DEFINATIONS<----------------------------
 
 //---------------------------------->ADD BOOK<------------------------------------
+
 void Add_book(void){
+   
+    
+
+
 
 }
 //-------------------------------->DELETE BOOK<-----------------------------------
@@ -98,7 +107,11 @@ void Delete_book(void){
 
 }
 //--------------------------------->CATALOG<--------------------------------------
-void Catalog(void){
+void Catalog(struct Book books[10]){
+        for(int i=0;i<3;i++)
+    {
+        printf(" %s| %s|%d|%f|%d\n",books[i].Author,books[i].Title,books[i].Book_id,books[i].price,books[i].quantity);
+    }
 
 }
 //-------------------------------->SEARCH<----------------------------------------
@@ -110,7 +123,7 @@ void update(){
 
 }
 //------------------------------>SELL BOOK<---------------------------------------
-void Sell(void){
+void sell(void){
 
 }
 //-----------------------------xxxxxxxxxxxxxx-------------------------------------
