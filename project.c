@@ -281,48 +281,72 @@ void Search(void){
     }
 }
 //----------------------------------->UPDATE<--------------------------------------
-void update(){
-    printf("Enter the Book ID you want to update:\n");
-    scanf("%d",&Book_id);
+void update(void){
+    printf("Enter the book ID you want to update:\n");
+    if(scanf("%d",&Book_id)!=1){
+        printf("Invalid book ID entered.Exiting update record.\n");
+        while(getchar()!='\n'); //clears the input buffer
+        return;
+    }
     int found=0;
     for(int i=0;i<bookcounter;i++){
         if(books[i].Book_id==Book_id){
             found=1;
-            printf("Book with ID %d exist in the catalog\n",Book_id);
-            printf("Do you want to update the price or quantity?\n");
-            printf("1.Price\n2.Quantity\n");
+            printf("Book with ID %d exist in the catalog.\n",Book_id);
+            printf("What do you want to update?\n");
+            printf("*****UPDATE MENU*****\n");
+            printf("     1.Price\n");
+            printf("     2.Quantity\n");
             int choice;
             printf("Enter your choice:\n");
-            scanf("%d",&choice);
+            if(scanf("%d",&choice)!=1){
+                printf("Invalid choice entered.Exiting update record.\n");
+                while(getchar()!='\n'); //clears the input buffer
+                return;
+            }
             if(choice==1){
-                do{
+                do{ 
+                while(1){
                     printf("Enter the new price:\n");
-                    scanf("%f",&books[i].Price);
-                    if(books[i].Price<=0){
-                        printf("Invalid price entered. Enter a positive and greater than 0 price.\n");
+                    if(scanf("%f",&books[i].Price)!=1){
+                        printf("Invalid price entered . Enter a numeric value(positive and greater than 0).\n");
+                        while(getchar()!='\n'); //clears the input buffer
+                        continue;
                     }
-                }while(books[i].Price<=0);
-                Savefile();
-                printf("Price updated succesfully\n");
+                    break;
+                }
+                if(books[i].Price<=0)
+                printf("Invalid price entered.Enter a positive and greater than 0 price.\n");
+            }while(books[i].Price<=0);
+               Savefile();
+               printf("Price updated successfully!\n");
             }
             else if(choice==2){
                 do{
-                    printf("Enter the new quantity\n");
-                    scanf("%d",&books[i].Quantity);
-                    if(books[i].Quantity<=0){
-                        printf("Invalid quantity entered. Enter a positive and greater than 0 quantity.\n");
+                    while(1){
+                        printf("Enter the new quantity:\n");
+                        if(scanf("%d",&books[i].Quantity)!=1){
+                            printf("Invalid quantity entered. Enter a numeric value(positive and greater than 0\n");
+                            while(getchar()!='\n'); //clears the input buffer
+                            continue;
+                        }
+                        break;
                     }
+                    if(books[i].Quantity<=0)
+                    printf("Invalid quantity entered. Enter a positive and greater than 0 quantity.\n");
+
                 }while(books[i].Quantity<=0);
                 Savefile();
-                printf("Quantity updated successfully\n");
+                printf("Quantity updated successfully!\n");
+  
             }
             else
-            {printf("Invalid choice\n");}
+            {printf("Invalid choice.\n");}
             break;
-        }}
-        if(found==0){
-            printf("Book with ID %d does not exist in the catalog\n",Book_id);
-    }
+        }
+        if(found==0)
+        printf("Book with ID %d doesnot exist in the catalog.\n",Book_id);
+    } 
 }
 //---------------------------------->SELL BOOK<------------------------------------
 void sell(void){ 
