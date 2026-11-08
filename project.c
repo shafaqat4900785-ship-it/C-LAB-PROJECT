@@ -199,7 +199,12 @@ void Add_book(void){
         return;
     }
     printf("Enter Book ID: \n");
-    scanf(" %d", &books[bookcounter].Book_id);
+    if(scanf(" %d", &books[bookcounter].Book_id)!=1)
+    {
+        printf("Invalid book ID entered.\nPlease refrain from entering non-numeric values next time.\nExiting from here...\n");
+        while(getchar()!='\n');
+        return;
+    }
      printf("Enter Book Title: \n");
     scanf(" %99[^\n]", books[bookcounter].Title);
      printf("Enter Book Author: \n");
@@ -207,14 +212,30 @@ void Add_book(void){
      printf("Enter Book genre : \n");
     scanf(" %99[^\n]", books[bookcounter].genre);
     do{
+        while(1){
     printf("Enter Book Price: \n");
-    scanf(" %f", &books[bookcounter].Price);
+    if(scanf("%f", &books[bookcounter].Price)!=1)
+    {
+        printf("Invalid input.Enter a numeric value (positive and greater than 0 price.)\n");
+        while(getchar()!='\n');// clearing input buffer
+        continue;
+    }
+    break;
+}
     if(books[bookcounter].Price<=0)
     printf("Invalid price entered. Enter a positive and greater than 0 price.\n");
     }while(books[bookcounter].Price<=0);
+
     do{
+        while(1){
     printf("Enter Book Quantity: \n");
-    scanf(" %d", &books[bookcounter].Quantity);
+    if(scanf(" %d", &books[bookcounter].Quantity)!=1){
+        printf("Invalid input.Enter a numeric value (positive and greater than 0 quantity.)\n");
+        while(getchar()!='\n');
+        continue;
+    }
+    break;
+}
     if(books[bookcounter].Quantity<=0)
     printf("Invalid quantity entered. Enter a positive and greater than 0 quantity.\n");
     }while(books[bookcounter].Quantity<=0);
@@ -231,7 +252,11 @@ void Delete_book(void){
     char choice;
     do{
     printf("Enter the Book ID to be deleted:\n");
-    scanf("%d",&Book_id);
+        if(scanf("%d",&Book_id)!=1){
+            printf("Invalid book ID entered.\nPlease refrain from entering non-numeric values next time\n.Exiting from here...\n");
+            while(getchar()!='\n');
+            return;
+        }
      int found=0;
     for(int i=0;i<bookcounter;i++){
         if(books[i].Book_id==Book_id)
@@ -266,7 +291,12 @@ void Catalog(void){
 //----------------------------------->SEARCH<--------------------------------------
 void Search(void){
     printf("Enter the Book ID you want to search:\n");
-    scanf("%d",&Book_id);
+    if(scanf("%d",&Book_id)!=1)
+    {
+        printf("Invalid book ID entered.Please refrain from entering non-numeric values next time.\nExiting from here...\n");
+        while(getchar()!='\n');
+        return;
+    }
     int found=0;
     for(int i=0;i<bookcounter;i++){
         if(books[i].Book_id==Book_id){
@@ -277,14 +307,14 @@ void Search(void){
         }
     }
     if(found==0){
-        printf("Book with Id %d doesnot exist in the catalog\n",Book_id);
+        printf("Book with ID %d doesnot exist in the catalog\n",Book_id);
     }
 }
 //----------------------------------->UPDATE<--------------------------------------
 void update(void){
     printf("Enter the book ID you want to update:\n");
     if(scanf("%d",&Book_id)!=1){
-        printf("Invalid book ID entered.Exiting update record.\n");
+        printf("Invalid book ID entered.\nPlease refrain from entering non-numeric values next time.\nExiting from here...\n");
         while(getchar()!='\n'); //clears the input buffer
         return;
     }
@@ -352,7 +382,12 @@ void update(void){
 //---------------------------------->SELL BOOK<------------------------------------
 void sell(void){ 
     printf("Enter the Book ID the customer wants to buy:\n");
-    scanf("%d",&Book_id);
+    if(scanf("%d",&Book_id)!=1)
+    {
+        printf("Invalid input book ID entered.\nPlease refrain from entering non-numeric values next time.\nExiting from here...\n");
+        while(getchar()!='\n');
+        return;
+    }
     int found=0;
     float total=0;
     for(int i =0;i<bookcounter;i++){
