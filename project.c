@@ -344,9 +344,10 @@ void update(void){
             {printf("Invalid choice.\n");}
             break;
         }
+    }
         if(found==0)
         printf("Book with ID %d doesnot exist in the catalog.\n",Book_id);
-    } 
+     
 }
 //---------------------------------->SELL BOOK<------------------------------------
 void sell(void){ 
