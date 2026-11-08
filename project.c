@@ -55,7 +55,12 @@ loadSales();
         printf("| 7.Cumulative Sales                        |\n");
         printf("| 8.Reset Sales                             |\n");
         printf("| 9.Exit                                    |\n");
-        scanf("%d",&option);
+        if(scanf("%d",&option)!=1){
+            printf("Invalid input! Please enter a number between 1 and 9.\n");
+            while(getchar()!='\n'); //clear the input buffer //if user enter AB and press enter toh getchar will abosrb A B and the chracter \n and input buffer hence becoemes empty
+            option =0;
+            continue;
+        }
 
 //--------------------------------->SWITCH<--------------------------------------
 
@@ -105,7 +110,7 @@ loadSales();
                 break;
             
             default:
-                printf("Invalid choice. Try again.\n");
+                printf("Invalid option! Choose between 1 and 9.\n");
         }
     }while(option!=9);
 
