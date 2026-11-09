@@ -170,7 +170,11 @@ void loadSales(void){
         totalSales=0;
         return;
     }
-    fread(&totalSales,sizeof(float),1,fp);
+    if(fread(&totalSales,sizeof(float),1,fp)!=1)
+    {
+        printf("Error loading total sales...\nTotal sales have been reset to zero!\n");
+        totalSales=0;
+    }
     fclose(fp);
 }
 
@@ -194,7 +198,7 @@ else
 void Add_book(void){
     char choice;
     do{
-    if(bookcounter==50){
+    if(bookcounter>=50){
         printf("The Inventory is full");
         return;
     }
@@ -205,6 +209,19 @@ void Add_book(void){
         while(getchar()!='\n');
         return;
     }
+    int duplicate=0;
+    for(int i=0;i<bookcounter;i++)
+    {
+        if(books[i].Book_id==books[bookcounter].Book_id)
+        {
+            duplicate=1;
+            break;
+        }
+    }
+        if(duplicate==1)
+        {printf("Book with ID %d already exists.\nCan't proceed further.\nPlease enter a unique book ID next time.\n",books[bookcounter].Book_id);
+        return;
+        }
      printf("Enter Book Title: \n");
     scanf(" %99[^\n]", books[bookcounter].Title);
      printf("Enter Book Author: \n");
@@ -356,7 +373,7 @@ void update(void){
                     while(1){
                         printf("Enter the new quantity:\n");
                         if(scanf("%d",&books[i].Quantity)!=1){
-                            printf("Invalid quantity entered. Enter a numeric value(positive and greater than 0\n");
+                            printf("Invalid quantity entered. Enter a numeric value(positive and greater than 0)\n");
                             while(getchar()!='\n'); //clears the input buffer
                             continue;
                         }
@@ -396,7 +413,12 @@ void sell(void){
             printf("Book with Id %d exist in the catalog\n",Book_id);
             printf("Enter the quantity the customer wants to buy:\n");
             int quantity;
-            scanf("%d",&quantity);
+            if(scanf("%d",&quantity)!=1)
+            {
+                printf("Invalid input.\nPlease refrain from entering non-numeric values next time.\nExiting from here...\n");
+                while(getchar()!='\n');
+                return;
+            }
             if(quantity<=0){
                 printf("Invalid quantity entered. Enter a positive and greater than 0 quantity.\n");
             }
