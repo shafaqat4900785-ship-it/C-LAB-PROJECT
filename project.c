@@ -11,7 +11,7 @@ struct Book{
 };
 
 //--------------------------->GLOBAL VARIABLES<---------------------------------
-
+int sale[50]={0};
 struct Book books[50];
 int Book_id;
 int bookcounter;
@@ -33,6 +33,7 @@ void cumulativeSales(void);
 void saveSales(void);
 void loadSales(void);
 void resetSales(void);
+void bestSell(void);
 //----------------------------------xxxxx----------------------------------------
 
 int main(){
@@ -52,11 +53,14 @@ loadSales();
         printf("| 4.Search book                             |\n");
         printf("| 5.update record                           |\n");
         printf("| 6.Sell book                               |\n");
-        printf("| 7.Cumulative Sales                        |\n");
-        printf("| 8.Reset Sales                             |\n");
-        printf("| 9.Exit                                    |\n");
+        printf("| 7.Best selling book                       |\n");
+        printf("| 8.Cumulative Sales                        |\n");
+        printf("| 9.Reset Sales                             |\n");
+        printf("| 10.Exit                                   |\n");
+        printf("+===========================================+\n");
+        printf("Enter choice\n");
         if(scanf("%d",&option)!=1){
-            printf("Invalid input! Please enter a number between 1 and 9.\n");
+            printf("Invalid input! Please enter a number between 1 and 10.\n");
             while(getchar()!='\n'); //clear the input buffer //if user enter AB and press enter toh getchar will abosrb A B and the chracter \n and input buffer hence becoemes empty
             option =0;
             continue;
@@ -94,25 +98,31 @@ loadSales();
                 printf("Sell book selected.\n");
                 sell();
                 break;
-
+      
             case 7:
+            printf("Best selling book selected\n");
+                bestSell();
+                break;
+
+            case 8:
                 printf("Cumulative Sales selected.\n");
                 cumulativeSales();
                 break;
 
-            case 8:
+            case 9:
                 printf("Resetting sales.\n");
                 resetSales();
                 break;
 
-            case 9:
+
+            case 10:
                 printf("Exiting.\n");
                 break;
             
             default:
-                printf("Invalid option! Choose between 1 and 9.\n");
+                printf("Invalid option! Choose between 1 and 10.\n");
         }
-    }while(option!=9);
+    }while(option!=10);
 
     return 0;
 }
@@ -160,6 +170,8 @@ void saveSales(void){
         return;
     }
     fwrite(&totalSales,sizeof(float),1,fp);
+    fwrite(&sale,sizeof(int),50,fp);
+
     fclose(fp);
 }
 //--------------------------------->LOAD SALES<------------------------------------
@@ -168,6 +180,9 @@ void loadSales(void){
     if(fp==NULL){
         printf("No previous sales data found. starting with total sales as 0.\n");
         totalSales=0;
+        for(int i=0;i<50;i++){
+            sale[i]=0;
+        }
         return;
     }
     if(fread(&totalSales,sizeof(float),1,fp)!=1)
@@ -175,24 +190,32 @@ void loadSales(void){
         printf("Error loading total sales...\nTotal sales have been reset to zero!\n");
         totalSales=0;
     }
+    if(fread(sale,sizeof(int),50,fp)!=50){
+        for(int i=0;i<50;i++){
+            sale[i]=0;
+        }
+    }
     fclose(fp);
 }
 
 //--------------------------------->RESET SALES<------------------------------------
 void resetSales(void){
-    printf("Are you sure you want to reset the sales? This action cannot be undone.(y/n)\n");
-char choice;
-scanf(" %c",&choice);
-if(choice=='y'|| choice=='Y')
-{
+    char choice;
+    do{
+        printf("Are you sure you want to reset the sales? This action cannot be undone.(y/n)\n");
+        scanf(" %c",&choice);
+        
+    if(choice=='y'|| choice=='Y'){
 totalSales=0;
 saveSales();
-printf("Total sales reset to 0.\n");
-}
-else
-{
-    printf("Reset sales cancelled.\n");
-}
+printf("Total sales reset to 0.\n");}
+else if(choice=='n' || choice=='N'){
+    printf("Reset sales cancelled.\n");}
+else{
+    printf("Invalid input! Enter (y/n) only\n");
+    while(getchar()!='\n');
+}}
+while(choice!='y'&& choice!='Y' && choice !='n' && choice !='N');
 }
 //--------------------------------->ADD BOOK<------------------------------------
 void Add_book(void){
@@ -256,7 +279,9 @@ void Add_book(void){
     if(books[bookcounter].Quantity<=0)
     printf("Invalid quantity entered. Enter a positive and greater than 0 quantity.\n");
     }while(books[bookcounter].Quantity<=0);
+    sale[bookcounter]=0;
     bookcounter++;
+    saveSales();
     Savefile();
     printf("New Entry made succesfully\n");
     printf("Do you want to add another book?(y/n):\n");
@@ -267,13 +292,11 @@ void Add_book(void){
 //-------------------------------->DELETE BOOK<-----------------------------------
 void Delete_book(void){
     char choice;
-    do{
     printf("Enter the Book ID to be deleted:\n");
         if(scanf("%d",&Book_id)!=1){
-            printf("Invalid book ID entered.\nPlease refrain from entering non-numeric values next time\n.Exiting from here...\n");
+            printf("Invalid book ID entered.\nPlease refrain from entering non-numeric values next time\n");
             while(getchar()!='\n');
-            return;
-        }
+        return;}
      int found=0;
     for(int i=0;i<bookcounter;i++){
         if(books[i].Book_id==Book_id)
@@ -281,8 +304,10 @@ void Delete_book(void){
           printf("Book with ID %d exist \n Deleting it...",Book_id);
            for(int j=i;j<bookcounter-1;j++){
             books[j]=books[j+1];
+            sale[j]=sale[j+1];
            }
            bookcounter--;
+           saveSales();
            Savefile();
            printf("Book with ID %d deleted successfully\n",Book_id);
         break;}
@@ -291,17 +316,25 @@ void Delete_book(void){
         printf("Book with Id %d does not exist in the catalog\n",Book_id);
     }
     printf("Do you want to delete another book?(y/n):\n");
-    scanf(" %c",&choice);
-}while(choice=='y'|| choice=='Y');
-}
+    scanf(" %c",&choice);}
 //---------------------------------->CATALOG<-------------------------------------
 void Catalog(void){
     if(bookcounter==0){
         printf("The catalog is empty.\n");
         return;
     }
+     printf("%-6s | %-25s | %-20s | %-12s | %-10s | %-12s\n",
+       "ID", "TITLE", "AUTHOR", "GENRE", "PRICE", "QUANTITY");
+printf("--------------------------------------------------------------------------------------------------\n");
     for(int i = 0; i < bookcounter; i++){
-        printf("%d | %s | %s | %s | %.2f | %d\n",books[i].Book_id,books[i].Title,books[i].Author,books[i].genre,books[i].Price, books[i].Quantity);
+        printf("%-6d | %-25.25s | %-20.20s | %-12.12s | %10.2f | %12d\n",
+    books[i].Book_id,
+    books[i].Title,
+    books[i].Author,
+    books[i].genre,
+    books[i].Price,
+    books[i].Quantity);
+       
     }
  
 }
@@ -398,6 +431,7 @@ void update(void){
 }
 //---------------------------------->SELL BOOK<------------------------------------
 void sell(void){ 
+    Catalog();
     printf("Enter the Book ID the customer wants to buy:\n");
     if(scanf("%d",&Book_id)!=1)
     {
@@ -434,6 +468,7 @@ void sell(void){
                 total=books[i].Price*quantity;
                 printf("Total price of this purchase order: Rs.%.2f\nAdded to the total annually sales\n",total);
                 totalSales+=total;
+                sale[i]+=quantity;
                 saveSales();
             }
             break;
@@ -445,5 +480,38 @@ void sell(void){
 }
 void cumulativeSales(void){
     printf("Cumulative sales as of now: Rs.%.2f\n",totalSales);
+}
+//-------------------------------->BEST SELLING BOOK<-----------------------------------
+void bestSell(void){
+    int order[50];
+    for(int i=0;i<bookcounter;i++){
+        order[i]=i;}
+    for(int i=0;i<bookcounter-1;i++){
+        for(int j=0;j<bookcounter-1-i;j++){
+            if(sale[order[j]]<sale[order[j+1]]){
+                int temp=order[j];
+                order[j]=order[j+1];
+                order[j+1]=temp;
+            }
+        }
+    }
+    if(bookcounter==0){
+        printf("No books\n");
+    }
+    else{
+    printf("The best selling books are\n");
+    printf("%-6s | %-25s | %-20s | %-12s | %-10s | %-12s\n",
+       "ID", "TITLE", "AUTHOR", "GENRE", "PRICE", "QUANTITY SOLD");
+printf("--------------------------------------------------------------------------------------------------\n");
+    for(int i=0;i<bookcounter;i++){
+        int index=order[i];
+   printf("%-6d | %-25.25s | %-20.20s | %-12.12s | %10.2f | %12d\n",
+    books[index].Book_id,
+    books[index].Title,
+    books[index].Author,
+    books[index].genre,
+    books[index].Price,
+    sale[index]);
+    }}
 }
 //-----------------------------xxxxxxxxxxxxxx-------------------------------------
