@@ -34,6 +34,8 @@ void saveSales(void);
 void loadSales(void);
 void resetSales(void);
 void bestSell(void);
+void FindByGenre(void);
+void LowStockReport(void);
 //----------------------------------xxxxx----------------------------------------
 
 int main(){
@@ -56,11 +58,13 @@ loadSales();
         printf("| 7.Best selling book                       |\n");
         printf("| 8.Cumulative Sales                        |\n");
         printf("| 9.Reset Sales                             |\n");
-        printf("| 10.Exit                                   |\n");
+        printf("| 10.Genre finder                           |\n");
+        printf("| 11.Low stock report                       |\n");
+        printf("| 12.Exit                                   |\n");
         printf("+===========================================+\n");
         printf("Enter choice\n");
         if(scanf("%d",&option)!=1){
-            printf("Invalid input! Please enter a number between 1 and 10.\n");
+            printf("Invalid input! Please enter a number between 1 and 12.\n");
             while(getchar()!='\n'); //clear the input buffer //if user enter AB and press enter toh getchar will abosrb A B and the chracter \n and input buffer hence becoemes empty
             option =0;
             continue;
@@ -116,13 +120,23 @@ loadSales();
 
 
             case 10:
+                printf("Genre finder selected.\n");
+                FindByGenre();
+                break;
+
+            case 11:
+                printf("Low stock report selected.\n");
+                LowStockReport();
+                break;
+
+            case 12:
                 printf("Exiting.\n");
                 break;
             
             default:
-                printf("Invalid option! Choose between 1 and 10.\n");
+                printf("Invalid option! Choose between 1 and 12.\n");
         }
-    }while(option!=10);
+    }while(option!=12);
 
     return 0;
 }
@@ -514,4 +528,115 @@ printf("------------------------------------------------------------------------
     sale[index]);
     }}
 }
-//-----------------------------xxxxxxxxxxxxxx-------------------------------------
+//-----------------------------FindByGenre-------------------------------------
+void FindByGenre(void)
+{
+    char genre[100];                 
+    int i;                            
+    int j;                          
+    int found = 0;                    
+
+    printf("Enter genre to search: "); 
+
+    if (scanf(" %99[^\n]", genre) != 1) { // Read up to 99 characters until Enter
+        printf("Invalid input.\n");        
+        while (getchar() != '\n');         // Remove leftover characters from input
+        return;                            
+    }
+
+    while (getchar() != '\n'); // Clear the rest of the input line
+
+    j = 0;                     // Start at the first character of the genre
+    while (genre[j] != '\0')   // Find the end of the entered genre
+        j++;                   // Move to the next character
+
+    while (j > 0 && genre[j - 1] == ' ') { // While the last character is a space
+        genre[j - 1] = '\0';               // Replace that space with end-of-string
+        j--;                               // Move one position back
+    }
+
+    printf("%-6s | %-25s | %-20s | %-12s | %-10s | %-12s\n",
+           "ID", "TITLE", "AUTHOR", "GENRE", "PRICE", "QUANTITY"); 
+
+    printf("--------------------------------------------------------------------------------------------------\n"); // Print separator line
+
+    for (i = 0; i < bookcounter; i++) { // Check every book in the catalog
+        int match = 1;                  // Assume this book's genre matches
+
+        j = 0; // Start comparing from the first character
+
+        while (books[i].genre[j] != '\0' || genre[j] != '\0') { // Compare until both strings end
+            char a = books[i].genre[j]; // Character from the book's genre
+            char b = genre[j];          // Character from the user's genre
+
+            if (a >= 'A' && a <= 'Z')   // If the book's character is uppercase
+                a = (char)(a + 32);     // Convert it to lowercase
+
+            if (b >= 'A' && b <= 'Z')   // If the user's character is uppercase
+                b = (char)(b + 32);     // Convert it to lowercase
+
+            if (a != b) {               // If the characters are different
+                match = 0;              // This book does not match
+                break;                  // Stop comparing this book
+            }
+
+            j++; // Move to the next character
+        }
+
+        if (match) { // If every character matched
+            printf("%-6d | %-25.25s | %-20.20s | %-12.12s | %10.2f | %12d\n",
+                   books[i].Book_id,   
+                   books[i].Title,     
+                   books[i].Author,   
+                   books[i].genre,     
+                   books[i].Price,     
+                   books[i].Quantity);
+
+            found++; // Count this matching book
+        }
+    }
+
+    if (found == 0) // If no book matched
+        printf("No books found in that genre.\n"); 
+}
+//-------------------------------LowStockReport-------------------------------------
+void LowStockReport(void)
+{
+    int limit;       
+    int found = 0;   
+
+    printf("Enter stock limit: "); // Ask the user for the stock limit
+
+    if (scanf("%d", &limit) != 1) { // Read one integer
+        printf("Invalid input.\n"); // If input is not a number, show an error
+        while (getchar() != '\n');  // Remove the invalid characters
+        return;                    
+    }
+
+    if (limit < 0) { // A negative stock limit is not valid
+        printf("Stock limit cannot be negative.\n"); 
+        return;                                      
+    }
+
+    printf("%-6s | %-25s | %-20s | %-12s | %-10s | %-12s\n",
+           "ID", "TITLE", "AUTHOR", "GENRE", "PRICE", "QUANTITY"); 
+
+    printf("--------------------------------------------------------------------------------------------------\n"); // Print separator line
+
+    for (int i = 0; i < bookcounter; i++) { 
+        if (books[i].Quantity <= limit) {   // If its quantity is at or below the limit
+            printf("%-6d | %-25.25s | %-20.20s | %-12.12s | %10.2f | %12d\n",
+                   books[i].Book_id,   
+                   books[i].Title,     
+                   books[i].Author,   
+                   books[i].genre,     
+                   books[i].Price,     
+                   books[i].Quantity);
+
+            found++; // Count this low-stock book
+        }
+    }
+
+    if (found == 0) // If no book was at or below the limit
+        printf("No books at or below that stock level.\n"); 
+}
