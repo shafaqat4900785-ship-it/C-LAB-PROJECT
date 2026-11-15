@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<string.h>
 //------------------------------>BOOK STRUCTURE<--------------------------------
 
 struct Book{
@@ -34,7 +35,6 @@ void saveSales(void);
 void loadSales(void);
 void resetSales(void);
 void bestSell(void);
-void FindByGenre(void);
 void LowStockReport(void);
 //----------------------------------xxxxx----------------------------------------
 
@@ -58,13 +58,12 @@ loadSales();
         printf("| 7.Best selling book                       |\n");
         printf("| 8.Cumulative Sales                        |\n");
         printf("| 9.Reset Sales                             |\n");
-        printf("| 10.Genre finder                           |\n");
-        printf("| 11.Low stock report                       |\n");
-        printf("| 12.Exit                                   |\n");
+        printf("| 10.Low stock report                       |\n");
+        printf("| 11.Exit                                   |\n");
         printf("+===========================================+\n");
         printf("Enter choice\n");
         if(scanf("%d",&option)!=1){
-            printf("Invalid input! Please enter a number between 1 and 12.\n");
+            printf("Invalid input! Please enter a number between 1 and 11.\n");
             while(getchar()!='\n'); //clear the input buffer //if user enter AB and press enter toh getchar will abosrb A B and the chracter \n and input buffer hence becoemes empty
             option =0;
             continue;
@@ -118,25 +117,19 @@ loadSales();
                 resetSales();
                 break;
 
-
             case 10:
-                printf("Genre finder selected.\n");
-                FindByGenre();
-                break;
-
-            case 11:
                 printf("Low stock report selected.\n");
                 LowStockReport();
                 break;
 
-            case 12:
+            case 11:
                 printf("Exiting.\n");
                 break;
             
             default:
-                printf("Invalid option! Choose between 1 and 12.\n");
+                printf("Invalid option! Choose between 1 and 11.\n");
         }
-    }while(option!=12);
+    }while(option!=11);
 
     return 0;
 }
@@ -306,16 +299,18 @@ void Add_book(void){
 //-------------------------------->DELETE BOOK<-----------------------------------
 void Delete_book(void){
     char choice;
-    printf("Enter the Book ID to be deleted:\n");
-        if(scanf("%d",&Book_id)!=1){
-            printf("Invalid book ID entered.\nPlease refrain from entering non-numeric values next time\n");
+    char title[100];
+    do{
+    printf("Enter the Book name to be deleted:\n");
+        if(scanf(" %99[^\n]",title)!=1){
+            printf("Invalid book input\n");
             while(getchar()!='\n');
         return;}
      int found=0;
     for(int i=0;i<bookcounter;i++){
-        if(books[i].Book_id==Book_id)
+        if(strcmpi(title,books[i].Title)==0)
         { found=1;
-          printf("Book with ID %d exist \n Deleting it...",Book_id);
+          printf("Book with name %s exist \n Deleting it...",title);
            for(int j=i;j<bookcounter-1;j++){
             books[j]=books[j+1];
             sale[j]=sale[j+1];
@@ -323,37 +318,44 @@ void Delete_book(void){
            bookcounter--;
            saveSales();
            Savefile();
-           printf("Book with ID %d deleted successfully\n",Book_id);
+           printf("Book with name %s deleted successfully\n",title);
         break;}
     }
     if(found==0){
-        printf("Book with Id %d does not exist in the catalog\n",Book_id);
+        printf("Book with name %s does not exist in the catalog\n",title);
     }
     printf("Do you want to delete another book?(y/n):\n");
     scanf(" %c",&choice);}
-//---------------------------------->CATALOG<-------------------------------------
-void Catalog(void){
-    if(bookcounter==0){
-        printf("The catalog is empty.\n");
+    while(choice == 'y' || choice == 'Y');}
+//----------------------------------->SEARCH<--------------------------------------
+void printHeader(void){
+    printf("%-6s | %-25s | %-20s | %-12s | %-10s | %-12s\n",
+           "ID", "TITLE", "AUTHOR", "GENRE", "PRICE", "QUANTITY");
+    printf("--------------------------------------------------------------------------------------------------\n");
+}
+
+void printRow(int i){
+    printf("%-6d | %-25.25s | %-20.20s | %-12.12s | %10.2f | %12d\n",
+           books[i].Book_id,
+           books[i].Title,
+           books[i].Author,
+           books[i].genre,
+           books[i].Price,
+           books[i].Quantity);
+}
+void Search(void){
+    int choice;
+    char title[100],genre[100],author[100];
+    printf("How would you like to search?\n");
+    printf("1.By ID\n2.By Title\n3.By Author\n4.By Genre\n");
+    printf("Enter choice\n");
+    if(scanf("%d",&choice)!=1){
+        printf("Invalid input! Enter between 1-4\n");
+        while(getchar()!='\n');
         return;
     }
-     printf("%-6s | %-25s | %-20s | %-12s | %-10s | %-12s\n",
-       "ID", "TITLE", "AUTHOR", "GENRE", "PRICE", "QUANTITY");
-printf("--------------------------------------------------------------------------------------------------\n");
-    for(int i = 0; i < bookcounter; i++){
-        printf("%-6d | %-25.25s | %-20.20s | %-12.12s | %10.2f | %12d\n",
-    books[i].Book_id,
-    books[i].Title,
-    books[i].Author,
-    books[i].genre,
-    books[i].Price,
-    books[i].Quantity);
-       
-    }
- 
-}
-//----------------------------------->SEARCH<--------------------------------------
-void Search(void){
+    switch(choice){
+        case 1:{
     printf("Enter the Book ID you want to search:\n");
     if(scanf("%d",&Book_id)!=1)
     {
@@ -366,14 +368,78 @@ void Search(void){
         if(books[i].Book_id==Book_id){
             found++;
             printf("Book with ID %d exist in the catalog\n",Book_id);
-            printf("%d | %s | %s | %s | %.2f | %d\n",books[i].Book_id,books[i].Title,books[i].Author,books[i].genre,books[i].Price, books[i].Quantity);
-          break;
+            printHeader();
+                    printRow(i);
+         break;
         }
     }
     if(found==0){
         printf("Book with ID %d doesnot exist in the catalog\n",Book_id);
     }
-}
+    break;}
+    case 2:{
+    printf("Enter book title you want to search:\n");
+    if(scanf(" %99[^\n]",title)!=1){
+        printf("Invalid input!\n");
+        while(getchar()!='\n');
+        return;
+    }
+    int found=0;
+    for(int i=0;i<bookcounter;i++){
+    if(strcmpi(title,books[i].Title)==0){
+        found++;
+        printf("Book with title %s exist in the catalog\n",title);
+                    printHeader();
+                    printRow(i);}}
+    if(found==0){
+printf("Book with title %s doesn't exsist in the catalog\n",title);}
+      break;}
+case 3:{
+        printf("Enter Author name\n");
+        if(scanf(" %99[^\n]",author)!=1){
+            printf("Invalid input!\n");
+            while(getchar()!='\n');
+            return;}
+            int found=0;
+        for(int i=0;i<bookcounter;i++){
+            if(strcmpi(author,books[i].Author)==0){
+                if(found==0){
+                printf("Books written by %s are\n",author);
+                printHeader();}
+                found++;
+                printRow(i);}}
+    if(found==0){
+printf("Books written by %s doesn't exsist in the catalog\n",author);}
+break;}
+     case 4:{
+        printf("Enter book genre\n");
+        if(scanf(" %99[^\n]",genre)!=1){
+            printf("Invalid input!");
+            while(getchar()!='\n');
+            return;}
+            int found=0;
+    for(int i=0;i<bookcounter;i++){
+        if(strcmpi(genre,books[i].genre)==0){
+            if(found==0){
+            printf("Books of %s genre are\n",genre);
+            printHeader();}
+            found++;
+            printRow(i);}}
+         if(found==0)
+printf("Books of %s genre doesn't exist in catalog\n",genre);
+break;}
+ default:{
+ printf("Invalid input! please only enter between 1-4\n");
+break;}}}
+//---------------------------------->CATALOG<-------------------------------------
+void Catalog(void){
+    if(bookcounter==0){
+        printf("The catalog is empty.\n");
+        return;
+    }
+     printHeader();
+    for(int i = 0; i < bookcounter; i++){
+        printRow(i);}}
 //----------------------------------->UPDATE<--------------------------------------
 void update(void){
     printf("Enter the book ID you want to update:\n");
@@ -440,25 +506,23 @@ void update(void){
         }
     }
         if(found==0)
-        printf("Book with ID %d doesnot exist in the catalog.\n",Book_id);
-     
-}
+        printf("Book with ID %d doesnot exist in the catalog.\n",Book_id);}
 //---------------------------------->SELL BOOK<------------------------------------
 void sell(void){ 
-    Catalog();
-    printf("Enter the Book ID the customer wants to buy:\n");
-    if(scanf("%d",&Book_id)!=1)
+    char title[100];
+    printf("Enter the Book name the customer wants to buy:\n");
+    if(scanf(" %99[^\n]",&title)!=1)
     {
-        printf("Invalid input book ID entered.\nPlease refrain from entering non-numeric values next time.\nExiting from here...\n");
+        printf("Invalid input.\nExiting from here...\n");
         while(getchar()!='\n');
         return;
     }
     int found=0;
     float total=0;
     for(int i =0;i<bookcounter;i++){
-        if(books[i].Book_id==Book_id){
+        if(strcmpi(books[i].Title,title)==0){
             found=1;
-            printf("Book with Id %d exist in the catalog\n",Book_id);
+            printf("Book with name %s exist in the catalog\n",books[i].Title);
             printf("Enter the quantity the customer wants to buy:\n");
             int quantity;
             if(scanf("%d",&quantity)!=1)
@@ -489,7 +553,7 @@ void sell(void){
         }
     }
     if(found==0){
-            printf("Book with ID %d does not exist in the catalog\n",Book_id);
+            printf("Book with name %s does not exist in the catalog\n",title);
         }
 }
 void cumulativeSales(void){
@@ -497,6 +561,10 @@ void cumulativeSales(void){
 }
 //-------------------------------->BEST SELLING BOOK<-----------------------------------
 void bestSell(void){
+    if(bookcounter==0){
+        printf("No books\n");
+        return;
+    }
     int order[50];
     for(int i=0;i<bookcounter;i++){
         order[i]=i;}
@@ -509,16 +577,15 @@ void bestSell(void){
             }
         }
     }
-    if(bookcounter==0){
-        printf("No books\n");
-    }
-    else{
+
     printf("The best selling books are\n");
     printf("%-6s | %-25s | %-20s | %-12s | %-10s | %-12s\n",
-       "ID", "TITLE", "AUTHOR", "GENRE", "PRICE", "QUANTITY SOLD");
+       "ID", "TITLE", "AUTHOR", "GENRE", "PRICE", "SOLD");
 printf("--------------------------------------------------------------------------------------------------\n");
-    for(int i=0;i<bookcounter;i++){
+    for(int i=0;i<bookcounter && i<5;i++){
         int index=order[i];
+        if(sale[index]==0){
+        continue;}
    printf("%-6d | %-25.25s | %-20.20s | %-12.12s | %10.2f | %12d\n",
     books[index].Book_id,
     books[index].Title,
@@ -527,78 +594,6 @@ printf("------------------------------------------------------------------------
     books[index].Price,
     sale[index]);
     }}
-}
-//-----------------------------FindByGenre-------------------------------------
-void FindByGenre(void)
-{
-    char genre[100];                 
-    int i;                            
-    int j;                          
-    int found = 0;                    
-
-    printf("Enter genre to search: "); 
-
-    if (scanf(" %99[^\n]", genre) != 1) { // Read up to 99 characters until Enter
-        printf("Invalid input.\n");        
-        while (getchar() != '\n');         // Remove leftover characters from input
-        return;                            
-    }
-
-    while (getchar() != '\n'); // Clear the rest of the input line
-
-    j = 0;                     // Start at the first character of the genre
-    while (genre[j] != '\0')   // Find the end of the entered genre
-        j++;                   // Move to the next character
-
-    while (j > 0 && genre[j - 1] == ' ') { // While the last character is a space
-        genre[j - 1] = '\0';               // Replace that space with end-of-string
-        j--;                               // Move one position back
-    }
-
-    printf("%-6s | %-25s | %-20s | %-12s | %-10s | %-12s\n",
-           "ID", "TITLE", "AUTHOR", "GENRE", "PRICE", "QUANTITY"); 
-
-    printf("--------------------------------------------------------------------------------------------------\n"); // Print separator line
-
-    for (i = 0; i < bookcounter; i++) { // Check every book in the catalog
-        int match = 1;                  // Assume this book's genre matches
-
-        j = 0; // Start comparing from the first character
-
-        while (books[i].genre[j] != '\0' || genre[j] != '\0') { // Compare until both strings end
-            char a = books[i].genre[j]; // Character from the book's genre
-            char b = genre[j];          // Character from the user's genre
-
-            if (a >= 'A' && a <= 'Z')   // If the book's character is uppercase
-                a = (char)(a + 32);     // Convert it to lowercase
-
-            if (b >= 'A' && b <= 'Z')   // If the user's character is uppercase
-                b = (char)(b + 32);     // Convert it to lowercase
-
-            if (a != b) {               // If the characters are different
-                match = 0;              // This book does not match
-                break;                  // Stop comparing this book
-            }
-
-            j++; // Move to the next character
-        }
-
-        if (match) { // If every character matched
-            printf("%-6d | %-25.25s | %-20.20s | %-12.12s | %10.2f | %12d\n",
-                   books[i].Book_id,   
-                   books[i].Title,     
-                   books[i].Author,   
-                   books[i].genre,     
-                   books[i].Price,     
-                   books[i].Quantity);
-
-            found++; // Count this matching book
-        }
-    }
-
-    if (found == 0) // If no book matched
-        printf("No books found in that genre.\n"); 
-}
 //-------------------------------LowStockReport-------------------------------------
 void LowStockReport(void)
 {
@@ -618,24 +613,15 @@ void LowStockReport(void)
         return;                                      
     }
 
-    printf("%-6s | %-25s | %-20s | %-12s | %-10s | %-12s\n",
-           "ID", "TITLE", "AUTHOR", "GENRE", "PRICE", "QUANTITY"); 
-
-    printf("--------------------------------------------------------------------------------------------------\n"); // Print separator line
-
+    else{
+    printf("Books with low stock are:\n");
+    printHeader();
     for (int i = 0; i < bookcounter; i++) { 
         if (books[i].Quantity <= limit) {   // If its quantity is at or below the limit
-            printf("%-6d | %-25.25s | %-20.20s | %-12.12s | %10.2f | %12d\n",
-                   books[i].Book_id,   
-                   books[i].Title,     
-                   books[i].Author,   
-                   books[i].genre,     
-                   books[i].Price,     
-                   books[i].Quantity);
-
+            printRow(i);
             found++; // Count this low-stock book
         }
-    }
+    }}
 
     if (found == 0) // If no book was at or below the limit
         printf("No books at or below that stock level.\n"); 
