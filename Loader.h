@@ -12,11 +12,11 @@ struct Book{
 };
 
 //--------------------------->GLOBAL VARIABLES<---------------------------------
-
 extern struct Book books[50];
 extern int Book_id;
 extern int bookcounter;
 extern float totalSales;
+extern int sale[50];
 
 //--------------------------->FUNCTION DECLARATIONS<----------------------------
 

@@ -3,10 +3,11 @@
 
 //--------------------------->GLOBAL VARIABLES<---------------------------------
 
+int sale[50]={0};
 struct Book books[50];
 int Book_id;
 int bookcounter;
-float totalSales;
+float totalSales=0;
 
 //-------------------------------->INITIALIZE FILE<------------------------------------
 void Initializefile(void){
@@ -48,6 +49,8 @@ void saveSales(void){
         return;
     }
     fwrite(&totalSales,sizeof(float),1,fp);
+    fwrite(&sale,sizeof(int),50,fp);
+
     fclose(fp);
 }
 //--------------------------------->LOAD SALES<------------------------------------
@@ -56,6 +59,9 @@ void loadSales(void){
     if(fp==NULL){
         printf("No previous sales data found. starting with total sales as 0.\n");
         totalSales=0;
+        for(int i=0;i<50;i++){
+            sale[i]=0;
+        }
         return;
     }
     if(fread(&totalSales,sizeof(float),1,fp)!=1)
@@ -63,5 +69,11 @@ void loadSales(void){
         printf("Error loading total sales...\nTotal sales have been reset to zero!\n");
         totalSales=0;
     }
+    if(fread(sale,sizeof(int),50,fp)!=50){
+        for(int i=0;i<50;i++){
+            sale[i]=0;
+        }
+    }
     fclose(fp);
 }
+
