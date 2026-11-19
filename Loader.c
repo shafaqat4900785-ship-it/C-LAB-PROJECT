@@ -49,7 +49,7 @@ void saveSales(void){
         return;
     }
     fwrite(&totalSales,sizeof(float),1,fp);
-    fwrite(&sale,sizeof(int),50,fp);
+    fwrite(sale,sizeof(int),50,fp);
 
     fclose(fp);
 }

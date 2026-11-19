@@ -406,10 +406,10 @@ void update(void){
                         }
                         break;
                     }
-                    if(books[i].Quantity<=0)
+                    if(books[i].Quantity<0)
                     printf("Invalid quantity entered. Enter a positive and greater than 0 quantity.\n");
 
-                }while(books[i].Quantity<=0);
+                }while(books[i].Quantity<0);
                 Savefile();
                 printf("Quantity updated successfully!\n");
   
@@ -490,6 +490,10 @@ void bestSell(void){
                 order[j+1]=temp;
             }
         }
+    }
+    if(sale[order[0]]==0){
+        printf("No books sold yet\n");
+        return;
     }
 
     printf("The best selling books are\n");
