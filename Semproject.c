@@ -140,6 +140,7 @@ else{
     while(getchar()!='\n');
 }}
 while(choice!='y'&& choice!='Y' && choice !='n' && choice !='N');
+while(getchar()!='\n');
 }
 //--------------------------------->ADD BOOK<------------------------------------
 // Adds a new book to the inventory after checking its details.
@@ -218,6 +219,7 @@ void Add_book(void){
     printf("Do you want to add another book?(y/n):\n");
     scanf(" %c",&choice);
 }while(choice=='Y'|| choice=='y');
+while(getchar()!='\n');
 }
 //-------------------------------->DELETE BOOK<-----------------------------------
 void Delete_book(void){
@@ -252,7 +254,9 @@ void Delete_book(void){
     }
     printf("Do you want to delete another book?(y/n):\n");
     scanf(" %c",&choice);}
-    while(choice == 'y' || choice == 'Y');}
+    while(choice == 'y' || choice == 'Y');
+while(getchar()!='\n');
+}
 //----------------------------------->PRINTHEADER<--------------------------------------
 // Displays the column headings used in the book catalog.
 void printHeader(void){
